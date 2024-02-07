@@ -1,5 +1,5 @@
 from ZIM.ZGen import EntityGenerator
-from run import Workflow1
+from run import Modeling_workspace
 from ZIM.output_table import System_Output
 import simpy
 from ZIM.ZResource import ResourcePool
@@ -7,16 +7,14 @@ from ZIM.ZContainer import ContainerPool
 from ZIM.ZStore import StorePool
 
 env = simpy.Environment()
-workinit = Workflow1(env)
+workinit = Modeling_workspace(env)
 
 entity_format = {
-    "type": "customer",
+    "type": "item",
     "id": 0,
-    "priority": lambda: executer(),
+    "priority": 0,
 }
 
-def executer():
-    return -1
 
 generator = EntityGenerator(env, workinit, entity_format, init_count=1)
 
@@ -26,33 +24,33 @@ def customer_generator():
     # for _ in range(5):
     #     env.process(generator.generate_entity())
     #     yield env.timeout(1)
-    for _ in range(5):
+    for _ in range(20):
         entity = generator.generate_entity()
-        env.process(workinit.work(entity))
+        env.process(workinit.run(entity))
         yield env.timeout(1)
 
-def customer_generator1():
+# def customer_generator1():
 
-    env.process(workinit.work(
-        generator.enter_format(
-            priority=0
-        )
-    ))
-    yield env.timeout(1)
+#     env.process(workinit.work(
+#         generator.enter_format(
+#             priority=0
+#         )
+#     ))
+#     yield env.timeout(1)
 
-    env.process(workinit.work(
-        generator.enter_format(
-            priority=0
-        )
-    ))
-    yield env.timeout(1)
+#     env.process(workinit.work(
+#         generator.enter_format(
+#             priority=0
+#         )
+#     ))
+#     yield env.timeout(1)
 
 
-    env.process(workinit.work(
-        generator.enter_format(
-            priority=-1
-        )
-    ))
+#     env.process(workinit.work(
+#         generator.enter_format(
+#             priority=-1
+#         )
+#     ))
 
 
 
@@ -63,18 +61,28 @@ def run_simulation():
     env.process(customer_generator())
     env.run()
     print("Simulation done.")
-    System_Output.show_table()
 
-    print(ResourcePool["counter"].user_time)
-    print(ResourcePool["counter"].leave_time)
-    print("--------------------------------------------------------")
-    # print(ResourcePool["counter1"].user_time)
-    # print(ResourcePool["counter1"].leave_time)
+    print("---------RESOURCE1----------")
+    for i in workinit.Modeling_Machien_Pool:
+        print(f'name:-> {i.res_name}')
+        print(f'entertime ->>>>{i.enter_time}')
+        print(f'leavetime ->>>>{i.leave_time}')
+        print(f'user_time ->>>>{i.user_time}')
+        print(f'queue_time ->>>>{i.queue_time}')
+        print('-------------------')
     
-    print(ContainerPool["item_container"].put_output)
-    print(ContainerPool["item_container"].get_output)
-    print("--------------------------------------------------------")
-    print(StorePool["item_store"].put_output)
-    print(StorePool["item_store"].get_output)
+    print("---------RESOURCE2----------")
+    for i in workinit.Inception_Machien_Pool:
+        print(f'name:-> {i.res_name}')
+        print(f'entertime ->>>>{i.enter_time}')
+        print(f'leavetime ->>>>{i.leave_time}')
+        print(f'user_time ->>>>{i.user_time}')
+        print(f'queue_time ->>>>{i.queue_time}')
+        print('-------------------')
+
+    print('---------STORE----------')
+    print(f'put->> {StorePool["Modeling_Store"].put_output}')
+    
+
 if __name__ == "__main__":
     run_simulation()

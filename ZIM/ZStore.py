@@ -28,7 +28,7 @@ class IStore:
         put amount of items into container
         '''
         entity = entity_name(entity)
-
+        #print("putting item")
         put_item = self.store.put(item)
         self.update_put_output(item, entity)
         self.system_table_append( entity=entity, activity="put")
@@ -136,6 +136,8 @@ class ZPriorityStore(IStore):
 def entity_name(entity) -> str:
     if entity == "unknown":
         return "unknown"
+    elif isinstance(entity, str):
+        return entity
     else:
         return f'{entity["type"]}_{entity["id"]}'
 
