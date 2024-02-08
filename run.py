@@ -9,13 +9,15 @@ class Modeling_workspace:
         self.Modeling_Store = Modeling_Store(env)
         self.Inception_Machien_Pool = [Inspection_Machien(env, f"Inspection_Machien_{i}") for i in range(5)]
         self.Inception_Store = ZStore(env, simpy.Store(env, capacity=10), "Inception_Store")
+        self.Packing_Machien_Pool = [Packing_Machien(env, f"Packing_Machien_{i}") for i in range(5)]
+        self.Packing_Store = ZStore(env, simpy.Store(env, capacity=10), "Packing_Store")
 
 
     def run(self, entity):
         machien = self.choose_machien(self.Modeling_Machien_Pool)
         yield from machien.run(entity=entity)
         yield self.Modeling_Store.put(entity)
-        yield self.env.timeout(2)
+        #yield self.env.timeout(2)
 
         if self.Modeling_Store.level() > 2:
             print("Inception_Store is full")
@@ -23,7 +25,29 @@ class Modeling_workspace:
             machien2 = self.choose_machien(self.Inception_Machien_Pool)
             yield from machien2.run(entity=b)
             yield self.Inception_Store.put(b)
-                
+            
+            if self.Inception_Store.level() > 2:
+                print("Packing_Store is full")
+                c = yield self.Inception_Store.get()
+                machien3 = self.choose_machien(self.Packing_Machien_Pool)
+                yield from machien3.run(entity=c)
+                yield self.Packing_Store.put(c)
+
+                print(f"Product {c} is done")
+
+        # if self.Modeling_Store.level():
+        #     b2 = yield self.Modeling_Store.get()
+        #     machien21 = self.choose_machien(self.Inception_Machien_Pool)
+        #     yield from machien21.run(entity=b2)
+        #     yield self.Inception_Store.put(b2)
+
+        # if self.Inception_Store.level():
+        #     c2 = yield self.Inception_Store.get()
+        #     machien31 = self.choose_machien(self.Packing_Machien_Pool)
+        #     yield from machien31.run(entity=c2)
+        #     yield self.env.timeout(2)
+        #     yield self.Packing_Store.put(c2)
+        #     print(f"Product {c2} is done")
         
 
             

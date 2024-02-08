@@ -34,8 +34,8 @@ class Packing_Machien(IRes):
         super().__init__(env, simpy.Resource(env, capacity=1), name)
         
     @IRes.run
-    def run(self):
-        yield self.env.timeout(random.randint(1, 3))
+    def run(self, entity):
+        yield self.env.timeout(random.randint(10, 15))
 
 class Modeling_Store(ZStore):
     def __init__(self, env):

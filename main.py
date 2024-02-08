@@ -24,7 +24,7 @@ def customer_generator():
     # for _ in range(5):
     #     env.process(generator.generate_entity())
     #     yield env.timeout(1)
-    for _ in range(20):
+    for _ in range(100):
         entity = generator.generate_entity()
         env.process(workinit.run(entity))
         yield env.timeout(1)
@@ -79,9 +79,25 @@ def run_simulation():
         print(f'user_time ->>>>{i.user_time}')
         print(f'queue_time ->>>>{i.queue_time}')
         print('-------------------')
+    
+    print("---------RESOURCE3----------")
+    for i in workinit.Packing_Machien_Pool:
+        print(f'name:-> {i.res_name}')
+        print(f'entertime ->>>>{i.enter_time}')
+        print(f'leavetime ->>>>{i.leave_time}')
+        print(f'user_time ->>>>{i.user_time}')
+        print(f'queue_time ->>>>{i.queue_time}')
+        print('-------------------')
 
     print('---------STORE----------')
     print(f'put->> {StorePool["Modeling_Store"].put_output}')
+
+    print('---------STORE2----------')
+    print(f'put->> {StorePool["Inception_Store"].put_output}')
+
+    print('---------STORE3----------')
+    print(f'put->> {StorePool["Packing_Store"].put_output}')
+    print(f'length ->> {len(StorePool["Packing_Store"].put_output)}')
     
 
 if __name__ == "__main__":
